@@ -1,0 +1,25 @@
+\documentclass[12pt]{article}
+
+\usepackage[backend=biber,style=numeric]{biblatex}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\addbibresource{label_table.bib}
+
+
+
+\begin{document}
+
+\noindent Dear Judge Smith,
+
+This is an example, where I cite something \footfullcite{p1tightbond} and then some more \footfullcite{p2controlling} and then refer to some emails that show a similar dynamic \footfullcite{email1}. 
+
+The timeline of the case is shown in Figure \ref{fig:tl}, and shows that there was an initial period of cooperation, followed by a period of conflict, and then a period of cooperation again.
+\begin{figure}[!h]
+    \centering
+    \includegraphics[width=\textwidth]{tl.png}
+    \caption{case timeline}
+    \label{fig:tl}
+\end{figure}
+
+
+\end{document}

@@ -1,0 +1,45 @@
+title: Timeline from September '21
+timeline:
+  - name: events
+    angle: 30
+    marker: .
+    events:
+      - name: Divorce
+        time: 2021-06-01
+        y: 0
+      - name: KC stay
+        start: 2021-09-07
+        end: 2022-01-01
+        y: 0
+      - name: child interview 1
+        time: 2021-09-25
+      - name: child interview Police
+        time: 2021-12-25
+      - name: child interview CPS
+        time: 2022-03-25
+      - name: start family therapy
+        time: 2022-08-18
+  - name: visitation
+    angle: 0
+    events:
+      - name: ad hoc visitation
+        start: 2021-06-01
+        end: 2021-09-07
+        color: b
+      - name: almost no visitation
+        start: 2021-09-07
+        end: 2022-01-15
+      - name: every other weekend
+        start: 2022-01-15
+        end: 2023-01-01
+        color: g 
+  - name: schooling
+    angle: 0
+    events:
+      - name: no school
+        start: 2021-09-07
+        end: 2021-10-25
+      - name: increased absence
+        start: 2022-10-07
+        end: 2022-12-01
+        color: orange 

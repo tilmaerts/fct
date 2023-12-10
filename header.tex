@@ -1,0 +1,43 @@
+\usepackage{xargs}
+\usepackage{xcolor}
+\usepackage[anchorcolor=blue]{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    anchorcolor=blue,
+    filecolor=magenta,
+    urlcolor=cyan,
+}
+
+\usepackage[textsize=tiny]{todonotes}
+\usepackage{etoolbox}
+\makeatletter
+\pretocmd{\@startsection}{\gdef\thesectiontype{#1}}{}{}
+\pretocmd{\@sect}{\@namedef{the\thesectiontype title}{#8}}{}{}
+\pretocmd{\@ssect}{\@namedef{the\thesectiontype title}{#5}}{}{}
+\makeatother
+
+\newwrite\textfile
+\immediate\openout\textfile=label_table.txt
+\immediate\write\textfile{label ; quote ; note ; section title ; section no ; page ; date}
+
+
+\newcommandx{\lb}[3]{\immediate\write\textfile{#1 \space; #2 \space; #3 \space; \thesectiontitle \space;  \thesection  \space;  \thepage  \space;  \pdate}%
+\csdef{#1}{#2}%
+\hypertarget{#1}{\textcolor{blue}{#2}}\todo[textsize=\small,color=blue!10!white,caption={\small#1; #3; #2}]{#1: #3}%
+}
+
+\newcommandx{\cc}[1]{
+    \hyperlink{#1}{\csuse{#1}}
+}
+
+
+\newcommand{\sdate}[1]{%
+  \def\localdate{#1}%
+}
+
+\newcommand{\pdate}{%
+  \localdate%
+}
+
+\usepackage{scrextend} 
