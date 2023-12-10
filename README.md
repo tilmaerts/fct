@@ -21,7 +21,7 @@ An example is given in `examples/labelled/full.tex`, you can use a single doc, o
 
 When you include `header.tex` and label the document using `\lb{key}{snippet}{note}`, then every time you compile `full.tex`, labels will be extracted to a csv table named `full_labels.csv`. 
 
-Using `csv2bib.py` you can convert this into a citation database, which allows you to write concise documents to different parties, built on citations from your case documentation, like `brief.tex`. 
+Using `csv2bib.py` you can convert this into a citation database, which allows you to write concise documents to different parties, built on citations from your case documentation, like `brief.tex`, which outputs [brief.pdf](https://github.com/tilmaerts/fct/files/13627234/brief.pdf). 
 
 - For emails you may use the `eml2tex.py` script to convert your emails into latex sections. 
 - For scanned documents you can use the `pdf2tex.py`, which uses OCR (tesseract) to convert your PDFs into latex sections.
@@ -56,4 +56,6 @@ Adds a date in the document, which is used for all labels following it until the
 
 ## Create timelines
 Another useful tool is a visual timeline of events, there is a `timeline_plotter.py` utility added. 
+
+![tl](https://github.com/tilmaerts/fct/assets/95282593/c236c40b-7fe5-4ac9-b033-0379d848f70a)
 
