@@ -18,13 +18,13 @@ def pretty_print_message(message_text):
         if key not in msg:
             msg[key] = []
 
-        msg[key].append(ll[key + (key > 0) :].strip() + "\\newline\n")  # + "\n"
+        msg[key].append(ll[key + (key > 0) :].strip() + "\n")  # + "\n"
 
     buf = ""
     for i in msg:
         buf += f"\\begin{{addmargin}}[{i*(2./len(msg))}cm]{{0cm}}\n"
         for j in msg[i]:
-            if not (buf.endswith("\n\\newline\n") and j.startswith("\\newline")):
+            if not (buf.endswith("\n\n") and j.startswith("\\newline")):
                 buf += j
         buf += "\\end{addmargin}\n"
 

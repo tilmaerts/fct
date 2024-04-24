@@ -3,49 +3,59 @@
 # Adjusting the plot based on the new requirements
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
-
-# from datetime import datetime
 import yaml
 import textwrap
 import fire
 
 
-def plot_timeline(ymlfile="inp.yml", outfile="gg.png"):
+def plot_timeline(ymlfile="inp.yml", outfile=None):
+    if not ymlfile.endswith(".yml"):
+        print("Input file should be a .yml file")
+        return
+    if not outfile:
+        outfile = ymlfile.split(".yml")[0] + ".png"
     # Sample data for two axes
     tls = yaml.load(open(ymlfile), Loader=yaml.FullLoader)
 
+    if "xticks" in tls:
+        if tls["xticks"] == "weekdays":
+            weekday_labels = True
+    else:
+        weekday_labels = False
     # Plotting with reduced margin between axes and text closer to bars and points
     np = len(tls["timeline"])
     fig, axes = plt.subplots(
-        np, 1, figsize=(12, np * 1.5), sharex=True, gridspec_kw={"hspace": 0}
+        np, 1, figsize=(12, np * 1.0), sharex=True, gridspec_kw={"hspace": 0}
     )
 
-    fig.suptitle(tls["title"])
+    if "title" in tls:
+        fig.suptitle(tls["title"])
     # Upper Axis: Point Events
     for ax, timeline in zip(axes, tls["timeline"]):
-        print(timeline)
+        # print(timeline)
         ax.set_ylabel(timeline["name"])
         ax.grid(True, alpha=0.5)
         marker = "s" if "marker" not in timeline else timeline["marker"]
         for event in timeline["events"]:
             event["name"] = textwrap.fill(event["name"], 15)
             ax.set_yticks([])
+            ax.set_ylim(-1.3, 1.3)
             if "time" in event:
-                ax.plot(
+                y = 0 if "y" not in event else event["y"]
+                ax.axvline(
                     event["time"],
-                    0,
-                    marker,
                     color="b" if not "color" in event else event["color"],
-                    markersize=10,
                     alpha=0.5,
                 )
                 ax.text(
                     event["time"],
-                    0.01,
+                    y,
                     event["name"],
                     ha="center",
                     va="center",
-                    rotation=45 if "angle" not in timeline else timeline["angle"],
+                    rotation=30 if "angle" not in timeline else timeline["angle"],
+                    clip_on=True,
+                    # transform=ax.transAxes,
                 )
             elif "start" in event:
                 y = 0 if "y" not in event else event["y"]
@@ -63,12 +73,15 @@ def plot_timeline(ymlfile="inp.yml", outfile="gg.png"):
                     event["name"],
                     ha="center",
                     va="center",
-                    rotation=45 if "angle" not in timeline else timeline["angle"],
+                    rotation=30 if "angle" not in timeline else timeline["angle"],
                 )
-
-    # Formatting
-    axes[-1].xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d"))
-    plt.xticks(rotation=45)
+    # If weekday_labels option is True, format x-axis labels as weekdays
+    if weekday_labels:
+        axes[-1].xaxis.set_major_formatter(mdates.DateFormatter("%A"))
+    else:
+        # Formatting
+        axes[-1].xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d"))
+    plt.xticks(rotation=30)
     plt.tight_layout()
     # Show plot
     fig.savefig(outfile, dpi=200)
