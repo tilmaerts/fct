@@ -9,10 +9,10 @@ full: ## make the full documentation
 	pdflatex full
 
 bib: ## translate labels to bibtex 
-	python ../../fct/csv2bib.py *labels.csv
+	fct_csvbib *labels.csv
 
 timeline: ## plot the timeline
-	python ../../fct/timeline_plotter.py timeline.yml tl.png
+	fct_timeline timeline.yml tl.png
 
 brief: ## make the brief 
 	pdflatex brief 

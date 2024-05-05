@@ -15,6 +15,7 @@ pymupdf = "^1.24.1"
 rapidfuzz = "^3.8.1"
 pandas = "^2.2.2"
 unidecode = "^1.3.8"
+matplotlib = "^3.8.4"
 
 
 [build-system]
@@ -25,3 +26,4 @@ build-backend = "poetry.core.masonry.api"
 [tool.poetry.scripts]
 fct_qs = "fct.quotesearch:main"
 fct_csvbib = "fct.csv2bib:main"
+fct_timeline = "fct.timeline_plotter:main"

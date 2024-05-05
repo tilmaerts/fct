@@ -8,7 +8,11 @@ import textwrap
 import fire
 
 
-def plot_timeline(ymlfile="inp.yml", outfile=None):
+def plot_timeline(ymlfile=None, outfile=None):
+    print(ymlfile)
+    if ymlfile == None:
+        exit("input timeline file")
+
     if not ymlfile.endswith(".yml"):
         print("Input file should be a .yml file")
         return
@@ -88,5 +92,10 @@ def plot_timeline(ymlfile="inp.yml", outfile=None):
     print("Saved to ", outfile)
 
 
-if __name__ == "__main__":
+def main():
     fire.Fire(plot_timeline)
+
+
+if __name__ == "__main__":
+    main()
+    # fire.Fire(plot_timeline)
