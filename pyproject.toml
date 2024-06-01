@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "fct"
-version = "0.1.0"
+version = "0.0.1"
 description = "command line utilities for preparation of quote databases from original documents, for use in family court"
 authors = ["tilmaerts <95282593+tilmaerts@users.noreply.github.com>"]
 license = "MIT"
@@ -20,6 +20,8 @@ matplotlib = "^3.8.4"
 
 demoji = "^1.1.0"
 openpyxl = "^3.1.2"
+
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
