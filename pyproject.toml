@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "fct"
+name = "fct1"
 version = "0.0.1"
 description = "command line utilities for preparation of quote databases from original documents, for use in family court"
 authors = ["tilmaerts <95282593+tilmaerts@users.noreply.github.com>"]
