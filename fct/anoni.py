@@ -12,14 +12,6 @@ def load_mappings(yaml_file):
     return mappings
 
 
-# Function to apply mappings to the text content
-# def apply_mappings(text, mappings):
-#     for pattern, replacement in mappings.items():
-#         wildcard_pattern = re.compile(re.escape(pattern).replace(r"\*", ".*"))
-#         text = wildcard_pattern.sub(replacement, text)
-#     return text
-
-
 def apply_mappings(text, mappings):
     for pattern, replacement in mappings.items():
         # Replace * with .*, and ? with .
@@ -32,6 +24,20 @@ def apply_mappings(text, mappings):
 
 # Main function for the CLI
 def process_text_file(text_file, config_file):
+    """
+    Process a text file by applying mappings from a configuration file to anonymize its content.
+
+    Args:
+        text_file (str): The path to the text file to be processed.
+        config_file (str): The path to the configuration file containing the mappings.
+
+    Returns:
+        None
+
+    Raises:
+        FileNotFoundError: If either the text file or the configuration file does not exist.
+        IOError: If there is an error reading or writing the files.
+    """
     mappings = load_mappings(config_file)
     with open(text_file, "r", encoding="utf-8") as file:
         content = file.read()
@@ -40,11 +46,13 @@ def process_text_file(text_file, config_file):
 
     # Option: Write to a file or just print it out
     # For this example, I'm printing the output
-    print(modified_content)
+    # print(modified_content)
     fname = text_file.replace(".txt", "_anon.txt")
     open(fname, "w", encoding="utf-8").write(modified_content)
-    print(f"Anonimized version of {text_file} has been written to {fname}")
-    print("Please check the file to make sure all personal information was caught!")
+    print(f"Anonymized version of {text_file} has been written to {fname}")
+    print(
+        "Note, this is not a guarantee that all identifying information was caught, please update your .yml file until all personal information is caught!"
+    )
 
 
 def main():
