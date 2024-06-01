@@ -5,6 +5,11 @@ description = "command line utilities for preparation of quote databases from or
 authors = ["tilmaerts <95282593+tilmaerts@users.noreply.github.com>"]
 license = "MIT"
 readme = "README.md"
+packages = [
+    { include = "fct", from = "." }
+]
+
+
 
 [tool.poetry.dependencies]
 python = "^3.9"
