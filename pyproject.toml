@@ -8,8 +8,19 @@ readme = "README.md"
 packages = [
     { include = "fct", from = "." }
 ]
+urls = { "Pypi" = "https://pypi.org/project/fct1/"}
+include = [
+    "fct_examples/labelled/*/*tex",
+    "fct_examples/labelled/*yml",
+    "fct_examples/labelled/makefile",
+    "fct_examples/labelled/*tex",
+    "fct_resources/*",
+]
 
 
+# [tool.poetry.package]
+# include = "examples"
+# from = "fct"
 
 [tool.poetry.dependencies]
 python = "^3.9"
@@ -37,3 +48,4 @@ fct_qs = "fct.quotesearch:main"
 fct_csvbib = "fct.csv2bib:main"
 fct_timeline = "fct.timeline_plotter:main"
 fct_anon = "fct.anoni:main"
+fct_example = "fct.fct_example:main"

@@ -3,6 +3,13 @@
 This repository contains tools to allow labelling of family court documents.
 It uses latex and python. 
 
+## Install
+
+'''
+pip install fct1
+'''
+
+
 ## Problem 
 
 The problem that it proposes a solution for is: 
