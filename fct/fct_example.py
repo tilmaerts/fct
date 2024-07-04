@@ -9,14 +9,14 @@ def main():
         os.path.join(os.path.dirname(__file__), "..", "fct_examples")
     )
 
-    print(module_path)
+    # print(module_path)
     if os.path.exists(destination):
         print(f"Directory {destination} already exists.")
         return
 
-    spec = importlib.util.spec_from_file_location("module_name", module_path)
+    # spec = importlib.util.spec_from_file_location("module_name", module_path)
 
-    print(spec)
+    # print(spec)
 
     shutil.copytree(module_path, destination)
     print(f"Examples directory created at {destination}")

@@ -66,3 +66,6 @@ Another useful tool is a visual timeline of events, there is a `timeline_plotter
 
 ![tl](https://github.com/tilmaerts/fct/assets/95282593/c236c40b-7fe5-4ac9-b033-0379d848f70a)
 
+## Anonimization
+Once you have plain text versions of your documentation, you can use `fct_anon` to anonymize these documents by replacing names, numbers and addresses with placeholders.
+This allows using for example GPT on the anonymized text, without leaking personal information.
