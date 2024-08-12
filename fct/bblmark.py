@@ -7,6 +7,7 @@ import glob
 import fitz
 import subprocess
 from rapidfuzz import process, fuzz
+import numpy as np
 
 
 def search_for_text_on_page(page, search_string, id, threshold=80):
@@ -31,13 +32,34 @@ def search_for_text_on_page(page, search_string, id, threshold=80):
     if match:
         sub = page_text[match[2] : match[2] + len(match[0])].replace("-\n", "")
         text_instances = page.search_for(sub)
+
+        ys, ye = text_instances[0].y0, text_instances[-1].y1
+        ymid = 0.5 * (ye + ys)
+        points = [
+            fitz.Point(page.mediabox[2] - 50, ys),  # Bottom-left
+            fitz.Point(page.mediabox[2] - 40, ymid),  # Bottom-right
+            fitz.Point(page.mediabox[2] - 50, ye),  # Top-right
+        ]
+
+        for i in range(len(points) - 1):
+            page.draw_line(
+                points[i], points[i + 1], color=(0, 0, 0), width=1
+            )  # Black color, 1 pt width
+
+        # path.finish()
+        # path.draw(color=(0, 0, 0), width=1)
+
         c = 0
         for inst in text_instances:
             highlight = page.add_highlight_annot(inst)
+
             if c == 0:
-                page.insert_text(
-                    (page.mediabox[2] - 25, inst[3]), f"{id}", color=(0, 0.3, 1)
+                # print(page.rotation, page.transformation_matrix, page.rect, inst)
+                text = page.insert_text(
+                    (page.mediabox[2] - 30, ymid + 3), f"r{id}", color=(0, 0.3, 1)
                 )
+                # print(type(text))
+
             c += 1
 
 
@@ -110,34 +132,58 @@ def out2ex(bbl, sdir):
 
     gr = df.groupby(["journaltitle", "pages"])
 
+    # print(df)
+
     # build inclusion doc
     pg = {}
     for pdf in loaded_pdfs:
-        pg1 = []
+        pg1, ids1, keys = [], [], []
         for nm, g in gr:
             if nm[0] == pdf:
                 pageno = nm[1]
+                ids = g["id"].tolist()
                 pg1.append(pageno)
+                ids1.extend(ids)
+                keys.extend(g["cite_key"].tolist())
 
         if pdf not in pg:
-            pg[pdf] = []
-        pg[pdf].extend(pg1)
+            pg[pdf] = {"pages": [], "ids": [], "keys": []}
+
+        pg[pdf]["pages"].extend(pg1)
+        pg[pdf]["ids"].extend(ids1)
+        pg[pdf]["keys"].extend(keys)
 
     out = ""
     for i in pg:
-        pages = set([1] + pg[i])
-        out += f"\\incdoc{{{{{','.join([str(j) for j in pages])}}}}}{{{i.replace(',','')}_print.pdf}}{{{i}}}{{}}\n"
+        pages = set([1] + pg[i]["pages"])
+        links = ""
+        # print(pg[i])
+        cite = ",".join(pg[i]["keys"])
+
+        for j in pg[i]["keys"]:
+            links += f"\\cite{{{j}}}"
+        out += f"\\incdoc{{{{{','.join([str(j) for j in pages])}}}}}{{{i.replace(',','')}_print.pdf}}{{{i}}}{{referencer: \\cite{{{cite}}} }}\n"
 
     open("logs.tex", "w").write(out)
 
+    found_ids = np.sort(np.array([id for ids in pg.values() for id in ids["ids"]]))
+
+    all_ids = df.id.values
+
+    for i in all_ids:
+        if i not in found_ids:
+            print(
+                f"did not find {i} in ids, key:", df[df["id"] == i]["cite_key"].iloc[0]
+            )
+
     # create the labelled pdfs
     for pdf in loaded_pdfs:
+        # print(pdf, loaded_pdfs[pdf].metadata)
         pages = [i for i in loaded_pdfs[pdf].pages()]
-
         for nm, group in gr:
             if nm[0] == pdf:
                 pageno = nm[1] - 1
-                print(group)
+                # print(group)
                 for title, id in zip(group["title"], group["id"]):
                     search_for_text_on_page(pages[pageno], title, id)
 

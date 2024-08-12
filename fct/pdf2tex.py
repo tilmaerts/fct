@@ -7,12 +7,16 @@ from tqdm import tqdm
 
 
 def convert_pdf(pdffile, lan="dan"):
-    bname = os.path.basename(pdffile).split(".")[0]
+    bname = os.path.basename(pdffile).split(".")[0].replace(" ", "_")
     print("converting pdf to tiff...")
-    os.system(f"pdftoppm -tiff -r 300 {pdffile} {bname}")
+    com = f"pdftoppm -tiff -r 300 {pdffile.replace(' ','\ ')} {bname}"
+    os.system(com)
+    print(com)
     outputfiles = sorted(glob.glob(f"{bname}*.tif"))
 
     buffer = f"\\section{{{bname}}}\n"
+
+    print(outputfiles)
 
     # Add tqdm progress bar
     for i in tqdm(outputfiles, desc="Converting to text"):
@@ -27,5 +31,9 @@ def convert_pdf(pdffile, lan="dan"):
     print(f"** saved to {bname}.tex")
 
 
-if __name__ == "__main__":
+def main():
     fire.Fire(convert_pdf)
+
+
+if __name__ == "__main__":
+    main()

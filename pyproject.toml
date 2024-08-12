@@ -31,17 +31,16 @@ python = "^3.9"
 bibtexparser = "^1.4.1"
 filelock = "^3.13.4"
 numpy = "^1.26.4"
-pymupdf = "^1.24.1"
+pymupdf = "1.24.9"
 rapidfuzz = "^3.8.1"
 pandas = "^2.2.2"
 unidecode = "^1.3.8"
 matplotlib = "^3.8.4"
-
-
 demoji = "^1.1.0"
 openpyxl = "^3.1.2"
 
 
+tqdm = "^4.66.4"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
@@ -54,3 +53,5 @@ fct_timeline = "fct.timeline_plotter:main"
 fct_anon = "fct.anoni:main"
 fct_example = "fct.fct_example:main"
 fct_bblmark = "fct.bblmark:main"
+fct_pdf2tex = "fct.pdf2tex:main"
+fct_gmsg2pdf = "fct.gmsg2pdf:main"
