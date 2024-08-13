@@ -19,10 +19,7 @@ def parse(filename: str):
 
     soup = bs4.BeautifulSoup(file, "html.parser")
 
-    messages = soup.find_all("div", class_="text-msg msg-content")
     msgparts = soup.find_all("mws-text-message-part")
-
-    print(msgparts)
 
     buf = ""
     for i in msgparts:
