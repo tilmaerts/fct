@@ -30,15 +30,24 @@ def load_bibtex_titles(bibtex_file):
     return bib_database
 
 
-def normalize_text(text):
+def normalize_text(text, extract=False):
     """
     Normalize text by removing punctuation, spaces, and making it lowercase.
     """
     # Remove LaTeX formatting, punctuation, spaces, and make lowercase
-    return re.sub(r"\W+", "", text).lower()
+    outtext = re.sub(r"\W+", "", text).lower()
+    if extract:
+        filtered_text = "\n".join(
+            line
+            for line in outtext.splitlines()
+            if not re.match(r"^\[\d+\]", line.strip())
+        )
+        return filtered_text
+    else:
+        return outtext
 
 
-def search_titles_in_pdfs(bib_database, pdf_files, output="output.bib"):
+def search_titles_in_pdfs(bib_database, pdf_files, output="output.bib", extract=False):
     """
     Searches for titles in a list of PDF files and prints the file name and page number where each title is found.
 
@@ -65,11 +74,19 @@ def search_titles_in_pdfs(bib_database, pdf_files, output="output.bib"):
             if pct > 85.0 and len(p[2]) > len(t) * 0.8:
                 # print(pct, len(p[2]), p[2])
                 # print(t, p[2])
+
                 print(f'Title "{t}" found in {p[0]} on page {p[1]} ({pct}%)')
-                bib_database.entries[n]["journal"] = unidecode(
-                    (os.path.basename(p[0]).replace("_", " ").replace(".pdf", ""))
-                )
-                bib_database.entries[n]["pages"] = str(p[1])
+                if extract:
+                    bib_database.entries[n]["isbn"] = f"ekstrakt s. {p[1]}"
+                    # unidecode(
+                    #     (os.path.basename(p[0]).replace("_", " ").replace(".pdf", ""))
+                    # )
+
+                else:
+                    bib_database.entries[n]["journal"] = unidecode(
+                        (os.path.basename(p[0]).replace("_", " ").replace(".pdf", ""))
+                    )
+                    bib_database.entries[n]["pages"] = str(p[1])
                 break
 
     for e in bib_database.entries:
@@ -92,13 +109,16 @@ def main():
         default="output.bib",
         help="Path to the output BibTeX file (default: output.bib)",
     )
+    parser.add_argument(
+        "--extract", "-x", action="store_true", help="run in extract mode"
+    )
     args = parser.parse_args()
 
     bibtex_file = args.bibtex_file
     pdf_files = args.pdf_files
 
     bibtex = load_bibtex_titles(bibtex_file)
-    bdb = search_titles_in_pdfs(bibtex, pdf_files, args.output)
+    bdb = search_titles_in_pdfs(bibtex, pdf_files, args.output, args.extract)
 
 
 if __name__ == "__main__":

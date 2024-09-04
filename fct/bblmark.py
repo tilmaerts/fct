@@ -30,8 +30,29 @@ def search_for_text_on_page(page, search_string, id, threshold=80):
     )
 
     if match:
-        sub = page_text[match[2] : match[2] + len(match[0])].replace("-\n", "")
+        sub = (
+            page_text[match[2] : match[2] + len(match[0])]
+            # .replace("-\n", "")
+            # .replace(" \n", "\n")
+            # .replace("\n", " ")
+        )
+
         text_instances = page.search_for(sub)
+
+        if len(text_instances) == 0:
+            sub = (
+                page_text[match[2] : match[2] + len(match[0])].replace("-\n", "")
+                # .replace(" \n", "\n")
+                # .replace("\n", " ")
+            )
+
+            text_instances = page.search_for(sub)
+
+        if len(text_instances) == 0:
+            print("Could not find text instance for", match, sub)
+            return
+
+        # print(match, sub, text_instances)
 
         ys, ye = text_instances[0].y0, text_instances[-1].y1
         ymid = 0.5 * (ye + ys)
@@ -43,7 +64,7 @@ def search_for_text_on_page(page, search_string, id, threshold=80):
 
         for i in range(len(points) - 1):
             page.draw_line(
-                points[i], points[i + 1], color=(0, 0, 0), width=1
+                points[i], points[i + 1], color=(1, 0, 0), width=3
             )  # Black color, 1 pt width
 
         # path.finish()
@@ -101,19 +122,40 @@ def parse_biblatex_bbl(file_path):
 
 def find_pdf_files(dir, names):
     allpdfs = glob.glob(os.path.join(dir, "*pdf"))
+
     opdfs = {}
+
+    ofs = {}
     for i in names:
         if type(i) is str:
+            ofs[i] = []
+
             for j in allpdfs:
-                istr = i.replace("_", "").replace(" ", "")
+                istr = i.replace("_", "").replace(" ", "") + ".pdf"
                 jstr = j.replace("_", "").replace(" ", "")
                 ratio = fuzz.partial_ratio(istr, jstr)
 
-                if ratio > 90:  # istr in jstr:
-                    opdfs[i] = j
+                ofs[i].append([i, j, ratio])
 
-            if i not in opdfs:
-                print(f"Could not find pdf for {i}")
+            #     if ratio > 90:  # istr in jstr:
+            #         print(f"Found {istr} in {jstr} with ratio {ratio}")
+            #         opdfs[i] = j
+
+            # if i not in opdfs:
+            #     print(f"Could not find pdf for {i}")
+            ofs[i].sort(key=lambda x: x[2], reverse=True)
+
+    # of.sort(key=lambda x: x[2], reverse=True)
+
+    for i in ofs:
+        print(i, ofs[i][0], ofs[i][-1])
+
+        if ofs[i][0][2] > 90:
+            opdfs[i] = ofs[i][0][1]
+
+    # print(of)
+
+    # exit()
 
     for i in opdfs:
         print(i, opdfs[i])
@@ -121,7 +163,20 @@ def find_pdf_files(dir, names):
     return opdfs
 
 
-def out2ex(bbl, sdir):
+def out2ex(bbl, sdir, output="logs.tex", exclude="EXCLUDE", reflinks=True):
+    """
+    Load a bbl file, and a directory of pdfs, find citations in the bbl file in the pdfs, create annotated versions of the pdfs locally, and create an inclusion doc, that pulls in the annotated pdfs
+    Parameters:
+    - bbl (str): The path to the .bbl file.
+    - sdir (str): The directory containing the PDF files.
+    - output (str): The name of the output file (default is "logs.tex").
+    - exclude (str): A comma-separated list of strings to exclude from the inclusion document (default is "EXCLUDE").
+    Returns:
+    None
+    """
+
+    excl = exclude.split(",")
+
     entries = parse_biblatex_bbl(bbl)
 
     df = pd.DataFrame(entries)
@@ -131,8 +186,6 @@ def out2ex(bbl, sdir):
     loaded_pdfs = dict([(j, fitz.open(pdfs[j])) for j in pdfs])
 
     gr = df.groupby(["journaltitle", "pages"])
-
-    # print(df)
 
     # build inclusion doc
     pg = {}
@@ -155,16 +208,30 @@ def out2ex(bbl, sdir):
 
     out = ""
     for i in pg:
-        pages = set([1] + pg[i]["pages"])
+        pages = sorted(set([1] + pg[i]["pages"]))
         links = ""
         # print(pg[i])
         cite = ",".join(pg[i]["keys"])
 
         for j in pg[i]["keys"]:
             links += f"\\cite{{{j}}}"
-        out += f"\\incdoc{{{{{','.join([str(j) for j in pages])}}}}}{{{i.replace(',','')}_print.pdf}}{{{i}}}{{referencer: \\cite{{{cite}}} }}\n"
 
-    open("logs.tex", "w").write(out)
+        include = True
+        for ex in excl:
+            if ex in i:
+                include = False
+                break
+
+        if reflinks:
+            ct = f"refs: \\cite{{{cite}}}"
+        else:
+            ct = ""
+        if include:
+            out += f"\\incdoc{{{{{','.join([str(j) for j in pages])}}}}}{{{i.replace(',','')}_print.pdf}}{{{i}}}{{{ct}}}\n"
+    # referencer: \\cite{{{cite}}}
+    open(output, "w").write(out)
+
+    print(f"Output written to {output}")
 
     found_ids = np.sort(np.array([id for ids in pg.values() for id in ids["ids"]]))
 
@@ -183,8 +250,9 @@ def out2ex(bbl, sdir):
         for nm, group in gr:
             if nm[0] == pdf:
                 pageno = nm[1] - 1
-                # print(group)
+                print(pdf, pdfs[pdf], len(pages), pageno)
                 for title, id in zip(group["title"], group["id"]):
+                    # print(title)
                     search_for_text_on_page(pages[pageno], title, id)
 
     for i in loaded_pdfs:
