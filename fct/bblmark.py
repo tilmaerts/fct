@@ -32,9 +32,6 @@ def search_for_text_on_page(page, search_string, id, threshold=80):
     if match:
         sub = (
             page_text[match[2] : match[2] + len(match[0])]
-            # .replace("-\n", "")
-            # .replace(" \n", "\n")
-            # .replace("\n", " ")
         )
 
         text_instances = page.search_for(sub)
@@ -42,8 +39,6 @@ def search_for_text_on_page(page, search_string, id, threshold=80):
         if len(text_instances) == 0:
             sub = (
                 page_text[match[2] : match[2] + len(match[0])].replace("-\n", "")
-                # .replace(" \n", "\n")
-                # .replace("\n", " ")
             )
 
             text_instances = page.search_for(sub)
@@ -51,8 +46,6 @@ def search_for_text_on_page(page, search_string, id, threshold=80):
         if len(text_instances) == 0:
             print("Could not find text instance for", match, sub)
             return
-
-        # print(match, sub, text_instances)
 
         ys, ye = text_instances[0].y0, text_instances[-1].y1
         ymid = 0.5 * (ye + ys)
@@ -180,6 +173,16 @@ def out2ex(bbl, sdir, output="logs.tex", exclude="EXCLUDE", reflinks=True):
     entries = parse_biblatex_bbl(bbl)
 
     df = pd.DataFrame(entries)
+
+    for i in entries:
+        print(i)
+
+    # for i in entries:
+    #     print(i)
+
+    # exit()
+
+    print(df["journaltitle"])
 
     pdfs = find_pdf_files(sdir, df["journaltitle"].unique().tolist())
 
