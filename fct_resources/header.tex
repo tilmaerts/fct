@@ -2,11 +2,11 @@
 \usepackage{xcolor}
 \usepackage{hyperref}
 \hypersetup{
-    colorlinks=true,
-    linkcolor=blue,
-    anchorcolor=blue,
-    filecolor=magenta,
-    urlcolor=cyan,
+  colorlinks=true,
+  linkcolor=blue,
+  anchorcolor=blue,
+  filecolor=magenta,
+  urlcolor=cyan,
 }
 
 \usepackage{todonotes}
@@ -23,12 +23,12 @@
 
 
 \newcommandx{\lb}[3]{\immediate\write\textfile{#1 \space; #2 \space; #3 \space; \thesectiontitle \space;  \thesection  \space;  \thepage  \space;  \pdate}%
-\csdef{#1}{#2}%
-\hypertarget{#1}{\textcolor{blue}{#2}}\todo[color=blue!10!white,caption={\small#1; #3; #2}]{#1: #3}%
+  \csdef{#1}{#2}%
+  \hypertarget{#1}{\textcolor{blue}{#2}}\todo[color=blue!10!white,caption={\small#1; #3; #2}]{#1: #3}%
 }
 
 \newcommandx{\cc}[1]{
-    \hyperlink{#1}{\csuse{#1}}
+  \hyperlink{#1}{\csuse{#1}}
 }
 
 
@@ -40,7 +40,7 @@
   \localdate%
 }
 
-\usepackage{scrextend} 
+\usepackage{scrextend}
 
 % \hypersetup{colorlinks=true} 
 % #, anchorcolor=blue}

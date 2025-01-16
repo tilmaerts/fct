@@ -10,40 +10,44 @@ import yaml
 
 REBUT_TEMPLATE = r"""
 \documentclass[12pt]{article}
-
-      \usepackage{hyperref}
-      \usepackage[backend=biber,style=numeric]{biblatex}
-      \addbibresource{label_table.bib}
-
-      \usepackage[breakable]{tcolorbox}
-      \usepackage[danish]{babel}
-
-      \newcommand{\bcite}[1]{\begin{tcolorbox}[left skip=0cm,   size=fbox, arc=1mm, boxsep=0mm,left=1mm, right=1mm, top=1mm, bottom=1mm, colframe=black, colback=white,box align=base, breakable]
-      {\small \cite{#1}: \fullcite{#1}}
-      \end{tcolorbox}}
-      \usepackage{enumitem}
-      \newcounter{globalenumi}
-      
-      % Custom enumerate environment using the global counter
-      \newenvironment{cenum}
-      {
-          \begin{enumerate}
-              \setcounter{enumi}{\value{globalenumi}} % Set enumi to the global counter
-              }
-              {
-              \setcounter{globalenumi}{\value{enumi}} % Save enumi back to the global counter
-          \end{enumerate}
-      }
-
+    \usepackage{tabularx}
+    \usepackage{hyperref}
+    \usepackage[backend=biber,style=numeric]{biblatex}
+    \addbibresource{label_table.bib}
+    \usepackage[breakable]{tcolorbox}
+    \usepackage[danish]{babel}
+    \newcommand{\bcite}[1]{\begin{tcolorbox}[left skip=0cm,   size=fbox, arc=1mm, boxsep=0mm,left=1mm, right=1mm, top=1mm, bottom=1mm, colframe=black, colback=white,box align=base, breakable]
+    {\small \cite{#1}: \fullcite{#1}}
+    \end{tcolorbox}}
+    \usepackage{enumitem}
+    \newcounter{globalenumi}
+    
+    % Custom enumerate environment using the global counter
+    \newenvironment{cenum}
+    {
+        \begin{enumerate}
+            \setcounter{enumi}{\value{globalenumi}} % Set enumi to the global counter
+            }
+            {
+            \setcounter{globalenumi}{\value{enumi}} % Save enumi back to the global counter
+        \end{enumerate}
+    }
 
 \begin{document}
-\section*{}
-Dato: \today
-
+\section*{DOCTYPE}
+\begin{tabularx}{\textwidth}{|l|X|}
+      \hline
+      \textbf{Sagsnr}                &                \\
+      \textbf{Parter}                & XX (Appellant) mod YY (Indstævnte) \\
+      \textbf{Dato:}              & \today               \\
+      \hline
+\end{tabularx}
 
 \begin{cenum}
 POINTS
 \end{cenum}
+
+\printbibliography[title={Referencer}]
 
 \end{document}
 
@@ -114,6 +118,7 @@ def table_to_bib(df, output_file, exclude_note, uuid_prefix=""):
     title = {{{replace_underscores(replace_multiple_spaces(remove_backslash_substrings(row["quote"])))}}},
     journal = {{{replace_underscores(replace_multiple_spaces(remove_curly_brace_content(remove_backslash_substrings(row["section title"]))))}}},
     date = {{{row["date"].strftime("%Y-%m-%d") if not pd.isnull(row["date"]) else ""}}},
+    pages = {{{row["page"] if not pd.isnull(row["page"]) else ""}}},
     }}
     """
             if exclude_note:
@@ -125,7 +130,7 @@ def table_to_bib(df, output_file, exclude_note, uuid_prefix=""):
 def base_rebuttal(df):
     latex_body = ""
     for i, row in df.iterrows():
-        latex_body += f"\t% {row['note']}\n"
+        latex_body += f"\t% prompt: {row['note']}\n"
         latex_body += f"\t\\item Angående citat: \\bcite{{{row['latex_label']}}} \n"
 
     if not os.path.exists("rebuttal.tex"):
