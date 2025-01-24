@@ -8,51 +8,6 @@ from datetime import datetime
 import demoji
 import yaml
 
-REBUT_TEMPLATE = r"""
-\documentclass[12pt]{article}
-    \usepackage{tabularx}
-    \usepackage{hyperref}
-    \usepackage[backend=biber,style=numeric]{biblatex}
-    \addbibresource{label_table.bib}
-    \usepackage[breakable]{tcolorbox}
-    \usepackage[danish]{babel}
-    \newcommand{\bcite}[1]{\begin{tcolorbox}[left skip=0cm,   size=fbox, arc=1mm, boxsep=0mm,left=1mm, right=1mm, top=1mm, bottom=1mm, colframe=black, colback=white,box align=base, breakable]
-    {\small \cite{#1}: \fullcite{#1}}
-    \end{tcolorbox}}
-    \usepackage{enumitem}
-    \newcounter{globalenumi}
-    
-    % Custom enumerate environment using the global counter
-    \newenvironment{cenum}
-    {
-        \begin{enumerate}
-            \setcounter{enumi}{\value{globalenumi}} % Set enumi to the global counter
-            }
-            {
-            \setcounter{globalenumi}{\value{enumi}} % Save enumi back to the global counter
-        \end{enumerate}
-    }
-
-\begin{document}
-\section*{DOCTYPE}
-\begin{tabularx}{\textwidth}{|l|X|}
-      \hline
-      \textbf{Sagsnr}                &                \\
-      \textbf{Parter}                & XX (Appellant) mod YY (Indstævnte) \\
-      \textbf{Dato:}              & \today               \\
-      \hline
-\end{tabularx}
-
-\begin{cenum}
-POINTS
-\end{cenum}
-
-\printbibliography[title={Referencer}]
-
-\end{document}
-
-"""
-
 
 def replace_multiple_spaces(s):
     try:
@@ -109,7 +64,7 @@ def load_uuid_prefix(csv_file_path):
 def table_to_bib(df, output_file, exclude_note, uuid_prefix=""):
     df["date"] = pd.to_datetime(df["date"], dayfirst=True, errors="coerce")
 
-    print("Writing to", output_file)
+    print("Writing to bibtex file: ", output_file)
     with open(output_file, "w") as bibtex_file:
         for index, row in df.iterrows():
             label_title = row["latex_label"]
@@ -118,30 +73,17 @@ def table_to_bib(df, output_file, exclude_note, uuid_prefix=""):
     title = {{{replace_underscores(replace_multiple_spaces(remove_backslash_substrings(row["quote"])))}}},
     journal = {{{replace_underscores(replace_multiple_spaces(remove_curly_brace_content(remove_backslash_substrings(row["section title"]))))}}},
     date = {{{row["date"].strftime("%Y-%m-%d") if not pd.isnull(row["date"]) else ""}}},
-    pages = {{{row["page"] if not pd.isnull(row["page"]) else ""}}},
+    pages = {{{row["opage"] + 1 if "opage" in row and not pd.isnull(row["opage"]) else ""}}},
     }}
     """
+
             if exclude_note:
                 bibtex_entry = bibtex_entry.replace("note =", "nonote =")
             # Write the BibTeX entry to the file
             bibtex_file.write(emojis_to_text(bibtex_entry))
 
 
-def base_rebuttal(df):
-    latex_body = ""
-    for i, row in df.iterrows():
-        latex_body += f"\t% prompt: {row['note']}\n"
-        latex_body += f"\t\\item Angående citat: \\bcite{{{row['latex_label']}}} \n"
-
-    if not os.path.exists("rebuttal.tex"):
-        with open("rebuttal.tex", "w") as rebuttal_file:
-            rebuttal_file.write(REBUT_TEMPLATE.replace("POINTS", latex_body))
-            print("written a new rebuttal.tex")
-
-    print("updated rebut points", latex_body)
-
-
-def process_csv_files(csv_files, output_file, exclude_note):
+def process_csv_files(csv_files, output_file, exclude_note, excel=False):
     csvs = []
     for csv_file in csv_files:
         print(f"Loading {csv_file}")
@@ -154,11 +96,9 @@ def process_csv_files(csv_files, output_file, exclude_note):
 
     df["latex_label"] = [f"{uuid_prefix}:{label.strip()}" for label in df["label"]]
 
-    df.to_excel("label_table.xlsx")
-
+    if excel:
+        df.to_excel("label_table.xlsx")
     table_to_bib(df, output_file, exclude_note, uuid_prefix=uuid_prefix)
-
-    base_rebuttal(df)
 
 
 def parse_arguments():
