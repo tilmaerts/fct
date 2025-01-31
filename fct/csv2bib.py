@@ -61,8 +61,23 @@ def load_uuid_prefix(csv_file_path):
     return ""
 
 
+def load_url(csv_file_path):
+    # Get the directory of the CSV file
+    csv_dir = os.path.dirname(csv_file_path)
+    info_file_path = os.path.join(csv_dir, "info.yml")
+
+    # Check if info.yml exists
+    if os.path.exists(info_file_path):
+        with open(info_file_path, "r") as info_file:
+            info_data = yaml.safe_load(info_file)
+            # Extract the url field
+            if "url" in info_data:
+                return info_data["url"]
+    return ""
+
+
 def table_to_bib(df, output_file, exclude_note, uuid_prefix=""):
-    df["date"] = pd.to_datetime(df["date"], dayfirst=True, errors="coerce")
+    df["date"] = pd.to_datetime(df["date"], dayfirst=False, errors="coerce")
 
     print("Writing to bibtex file: ", output_file)
     with open(output_file, "w") as bibtex_file:
@@ -74,6 +89,7 @@ def table_to_bib(df, output_file, exclude_note, uuid_prefix=""):
     journal = {{{replace_underscores(replace_multiple_spaces(remove_curly_brace_content(remove_backslash_substrings(row["section title"]))))}}},
     date = {{{row["date"].strftime("%Y-%m-%d") if not pd.isnull(row["date"]) else ""}}},
     pages = {{{row["opage"] + 1 if "opage" in row and not pd.isnull(row["opage"]) else ""}}},
+    url = {{{load_url(output_file)}}},
     }}
     """
 

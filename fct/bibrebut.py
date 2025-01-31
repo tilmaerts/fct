@@ -56,16 +56,9 @@ def base_rebuttal(bibfile):
         latex_body += f"\t\\item Angående citat: \\bcite{{{row['ID']}}} \n"
 
     rebuttal_body = REBUT_TEMPLATE.replace("POINTS", latex_body).replace(
-        "BIBPATH", bibfile
+        "BIBPATH", os.path.abspath(bibfile)
     )
-
-    # if not os.path.exists("rebuttal.tex"):
-    #     with open("rebuttal.tex", "w") as rebuttal_file:
-    #         rebuttal_file.write(REBUT_TEMPLATE.replace("POINTS", latex_body))
-    #         print("written a new rebuttal.tex")
-
     print("\n\n\n", rebuttal_body)
-
     return rebuttal_body
 
 
