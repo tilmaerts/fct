@@ -1,0 +1,142 @@
+\usepackage{pdfpages}
+\usepackage[twoside]{fancyhdr}
+\usepackage{hyperref}
+\usepackage[margin=3cm, headheight=15pt, headsep=15pt, footskip=20pt]{geometry}
+\usepackage{tocloft}
+
+\usepackage{enumitem}
+
+
+\newcounter{globalenumi}
+
+% Custom enumerate environment using the global counter
+\newenvironment{cenum}
+{
+    \begin{enumerate}
+        \setcounter{enumi}{\value{globalenumi}} % Set enumi to the global counter
+        }
+        {
+        \setcounter{globalenumi}{\value{enumi}} % Save enumi back to the global counter
+    \end{enumerate}
+}
+
+
+\makeatletter
+\newcommand*{\idoc}[2]{%  
+    \newpage
+    \begingroup
+    \fancyhf{}\fancyhead[L]{#2}\fancyhead[R]{\thepage}
+    \phantomsection
+    % \section{#2}
+    \refstepcounter{section}
+    \addcontentsline{toc}{section}{\thesection\quad#2}
+    \includepdf[
+        pages=-,
+        pagecommand={
+                \thispagestyle{fancy}}
+    ]{#1}
+    \endgroup
+}
+\makeatother
+
+\makeatletter
+\newcommand*{\idocs}[2]{%  
+    \newpage
+    \begingroup
+    \fancyhf{}\fancyhead[L]{#2}\fancyhead[R]{\thepage}
+    \phantomsection
+    % \section{#2}
+    \refstepcounter{subsection}
+    \addcontentsline{toc}{subsection}{\thesubsection\quad#2}
+    \includepdf[
+        pages=-,
+        pagecommand={
+                \thispagestyle{fancy}}
+    ]{#1}
+    \endgroup
+}
+\makeatother
+
+
+\makeatletter
+\newcommand*{\idocss}[2]{%  
+    \newpage
+    \begingroup
+    \fancyhf{}\fancyhead[L]{#2}\fancyhead[R]{\thepage}
+    \phantomsection
+    % \section{#2}
+    \refstepcounter{subsubsection}
+    \addcontentsline{toc}{subsubsection}{\thesubsubsection\quad#2}
+    \includepdf[
+        pages=-,
+        pagecommand={
+                \thispagestyle{fancy}}
+    ]{#1}
+    \endgroup
+}
+\makeatother
+
+
+% \makeatletter
+% \newcommand*{\incdoc}[4]{%  
+%     \newpage
+%     \begingroup
+%     \fancyhf{}\fancyhead[C]{#3, side #1, #4}\fancyhead[R]{\thepage}
+%     \phantomsection
+%     \refstepcounter{subsection}
+
+%     \addcontentsline{toc}{subsection}{\thesubsection, #3, side: #1, #4}
+%     \includepdf[
+%         pages=#1,
+%         pagecommand={
+%                 \thispagestyle{fancy}}
+%     ]{#2}
+%     \endgroup
+% }
+% \makeatother
+
+
+\makeatletter
+\newcommand*{\incdoc}[4]{%  
+    \newpage
+    \begingroup
+    \fancyhf{}
+    \fancyhead[C]{#3, side #1, #4}
+    \fancyhead[R]{\thepage}
+    % \setlength{\headsep}{45pt} 
+    % \setlength{\headheight}{14pt} 
+    \phantomsection
+    \refstepcounter{subsection}
+    \addcontentsline{toc}{subsection}{\thesubsection, #3, side: #1, #4}
+    \includepdf[
+        pages=#1,
+        pagecommand={
+                \thispagestyle{fancy}
+                % \vspace{-40pt} % Additional fine-tuning if needed
+            }
+    ]{#2}
+    \endgroup
+}
+\makeatother
+
+
+\makeatletter
+\newcommand*{\incdoclab}[4]{%  
+    \newpage
+    \begingroup
+    \fancyhf{}\fancyhead[C]{#3, side #1}\fancyhead[R]{\thepage}
+    \phantomsection
+    \refstepcounter{subsection}
+
+    \addcontentsline{toc}{subsection}{\thesubsection, #3, side: #1}
+    \includepdf[
+        pages=#1,
+        pagecommand={
+                \thispagestyle{fancy}}
+    ]{#2} \label{inc:#4}
+    \endgroup
+}
+\makeatother
+
+
+\renewcommand{\headrulewidth}{0pt}
